@@ -26,6 +26,7 @@ python test.py
 
 Here's a demo's results:
 
-LR_curve.png
+![LR_curve](https://user-images.githubusercontent.com/106359260/224893376-89e7d5ad-76e3-42cf-95e6-368df5171291.png)
 
 This demo used 2720 croped images from the original 110 images in .dng format training for 50 epochs.
+The final MSE for training, validation and test are 331.77, 288.86, 247.64.
