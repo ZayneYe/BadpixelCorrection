@@ -13,4 +13,4 @@ To train:
 python train.py
 
 To evaluate:
-python test.py
+python test.py --mode test
