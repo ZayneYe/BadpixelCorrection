@@ -32,21 +32,18 @@ def resize_dng(raw_data):
 
 
 if __name__ == "__main__":
+    random.seed(77)
     cut_size = 5
     sample_amt = 25 #should be a square number
 
     data_dir = '../data/medium_dng'
-    label_dir = '../data/medium/label'
     feature_dir = '../data/medium/feature'
-
-    maxv, minv = compute_pixel(data_dir)
-    if not os.path.exists(label_dir):
-        os.makedirs(label_dir)
+   
     if not os.path.exists(feature_dir):
         os.makedirs(feature_dir)
 
     split_dng = np.zeros((cut_size, cut_size))
-
+    maxv, minv = compute_pixel(data_dir)
     cnt = 0
     for dng in os.listdir(data_dir):
         raw = rawpy.imread(os.path.join(data_dir, dng))
@@ -54,7 +51,6 @@ if __name__ == "__main__":
         resized_data = resize_dng(raw_data)
         H, W = resized_data.shape
         cut_data = np.zeros((cut_size, cut_size))
-        bad_data = np.zeros((cut_size, cut_size))
         
         i_sel = random.sample(range(0, H, cut_size), int(pow(sample_amt, 0.5)))
         j_sel = random.sample(range(0, W, cut_size), int(pow(sample_amt, 0.5)))
@@ -63,11 +59,10 @@ if __name__ == "__main__":
             for j in j_sel:
                 npy = f"{dng.split('.')[0]}_{i}_{j}.npy"
                 cut_data = resized_data[i:i+cut_size, j:j+cut_size]
-                bad_data = np.copy(cut_data)
-                bad_data[int(cut_size / 2)][int(cut_size / 2)] = random.choice((maxv, minv))
+                # bad_data = np.copy(cut_data)
+                # bad_data[int(cut_size / 2)][int(cut_size / 2)] = random.choice((maxv, minv))
                 # print(cut_data.all() == bad_data.all()) 
-                np.save(os.path.join(label_dir, npy), cut_data)
-                np.save(os.path.join(feature_dir, npy), bad_data)
+                np.save(os.path.join(feature_dir, npy), cut_data)
                 cnt += 1
                 print(f"{cnt} npy file has been created.")
                 

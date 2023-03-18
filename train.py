@@ -54,47 +54,49 @@ class PixelCalculate():
 
     def validate(self):
         self.model.eval()
-        val_loss = 0
+        val_loss, normalize_term = 0, 0
         with torch.no_grad():
-            for i, (feature, label) in enumerate(self.val_set):
-                feature, label = prepocess(feature, label)
+            for i, feature in enumerate(self.val_set):
+                feature, label = prepocess(feature)
                 input, target = feature.to(self.device), label.to(self.device)
                 predict = self.model(input)
                 predict = predict.view(len(predict))
                 loss = self.criterion(predict, target)
+                normalize_term += sum(pow(target, 2)).item() / len(target)
                 val_loss += loss.item()  
-        val_loss /= len(self.val_set)
+        val_loss /= normalize_term
         return val_loss
 
 
     def train(self):
         self.logger.info("Start Training...")
         model = self.model
-        optimizer = torch.optim.Adam(model.parameters(), lr=self.lr, weight_decay=0.0001)
+        optimizer = torch.optim.Adam(model.parameters(), lr=self.lr, weight_decay=0.001)
         
-        train_loss, val_loss, min_val_loss = 0, 0, sys.maxsize
+        train_loss, val_loss, normalize_term, min_val_loss = 0, 0, 0, sys.maxsize
         loss_vec, val_loss_vec, val_vec = [], [], []
         model.train()
         for epoch in range(self.epochs):
-            for i, (feature, label) in enumerate(self.train_set):
-                feature, label = prepocess(feature, label)
-                feature, label = feature.to(self.device), label.to(self.device)   
+            for i, feature in enumerate(self.train_set):
+                feature, label = prepocess(feature)
+                feature, label = feature.to(self.device), label.to(self.device)
                 optimizer.zero_grad()
                 predict = model(feature)
                 predict = predict.view(len(predict)) 
                 loss = self.criterion(predict, label)
+                normalize_term += sum(pow(label, 2)).item() / len(label)
                 train_loss += loss.item()
                 loss.backward()
                 optimizer.step()
             
-            train_loss /= len(self.train_set)
+            train_loss /= normalize_term
             loss_vec.append(train_loss)
-            info = f"Epoch: {epoch + 1}\tTraining MSE: {train_loss}"
+            info = f"Epoch: {epoch + 1}\tTraining NMSE: {train_loss}"
             if (epoch + 1) % self.val_step:
                 self.logger.info(info)
             else:
                 val_loss = self.validate()
-                info += f"\tValidation MSE: {val_loss}"
+                info += f"\tValidation NMSE: {val_loss}"
                 self.logger.info(info)
                 val_vec.append(epoch + 1)
                 val_loss_vec.append(val_loss)

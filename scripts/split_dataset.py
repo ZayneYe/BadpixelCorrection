@@ -10,7 +10,6 @@ def move_data(dir, set, cate):
         shutil.move(os.path.join(dir, file), dir_)
 
 if __name__ == "__main__":
-    label_dir = '../data/medium/label'
     feature_dir = '../data/medium/feature'
     data = list(os.listdir(feature_dir))
     random.shuffle(data)
@@ -22,9 +21,5 @@ if __name__ == "__main__":
     train_set = data[:train_num]
     val_set = data[train_num:train_num + val_num]
     test_set = data[train_num + val_num:]
-    move_data(feature_dir, train_set, "train")
-    move_data(feature_dir,val_set, "val")
-    move_data(feature_dir, test_set, "test")
-    move_data(label_dir, train_set, "train")
-    move_data(label_dir,val_set, "val")
-    move_data(label_dir, test_set, "test")
+    for mode in ["train", "val", "test"]:
+        move_data(feature_dir, train_set, mode)

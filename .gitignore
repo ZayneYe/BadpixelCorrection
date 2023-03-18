@@ -4,3 +4,7 @@
 *.npy
 *.dng
 *.gz
+*.pyc
+*.pt
+*.log
+*.png
