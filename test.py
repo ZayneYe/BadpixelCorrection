@@ -5,7 +5,25 @@ from utils.prepocess import *
 from dataset import SamsungDataset
 from torch.utils.data import DataLoader
 from utils.logger import get_logger
-from utils.plot import plot_NMSE
+from utils.plot import plot_NMSE, plot_mean_median
+import numpy as np
+
+def cal_mean_median(test_set):
+    loss_mean, loss_median, normalize_term = 0, 0, 0
+    for i, feature in enumerate(test_set):
+        feature, label = prepocess(feature)
+        input, target = feature.numpy(), label.numpy()
+
+        input_mean = np.mean(input, axis=1)
+        loss_mean += np.mean(pow(input_mean - target, 2))
+        
+        input_median = np.median(input, axis=1)
+        loss_median += np.mean(pow(input_median - target, 2))
+        
+        normalize_term += np.mean(pow(target, 2))
+    
+    return loss_mean / normalize_term, loss_median / normalize_term
+        
 
 def test(args, test_file):
     test_data = SamsungDataset(args.data_path, test_file)
@@ -29,16 +47,22 @@ def test(args, test_file):
     with torch.no_grad():
         for i, feature in enumerate(test_set):
             feature, label = prepocess(feature)
-
-            input, target = feature.to(device), label.to(device)
-            predict = model(input)
+            feature, label = feature.to(device), label.to(device)
+            predict = model(feature)
             predict = predict.view(len(predict))
-            loss = criterion(predict, target)
-            normalize_term += sum(pow(target, 2)).item() / len(target)
+            loss = criterion(predict, label)
+            normalize_term += sum(pow(label, 2)).item() / len(label)
             test_loss += loss.item()  
     test_loss /= normalize_term
-    info = f"Test NMSE: {test_loss}"
-    logger.info(info)
+    logger.info(f"Test NMSE: {test_loss}")
+    if test_file == 'test':
+        mean_NMSE, median_NMSE = cal_mean_median(test_set)
+        logger.info(f"Mean NMSE: {mean_NMSE}")
+        logger.info(f"Median NMSE: {median_NMSE}")
+        losses_vec = [mean_NMSE, median_NMSE, test_loss]
+        cate_vec = ['Mean', 'Median', 'MLP']
+        plot_mean_median(cate_vec, losses_vec, test_save_path)
+
     logger.info("Test Completed.")
     return test_loss, test_save_path
 
@@ -64,7 +88,7 @@ def lanuch(args):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument('--mode', type=str, default='corrupt')
+    parser.add_argument('--mode', type=str, default='test')
     parser.add_argument('--data_path', type=str, default='data/medium')
     parser.add_argument('--model_path', type=str, default='results/mlp/exp/train/weights/best.pt')
     args = parser.parse_args()
