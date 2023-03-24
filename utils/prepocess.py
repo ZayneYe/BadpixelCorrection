@@ -1,13 +1,13 @@
-import torch
+import numpy as np
 
 def del_tensor_ele(arr,index):
-    arr1 = arr[:, 0:index]
-    arr2 = arr[:, index+1:]
-    return torch.cat((arr1,arr2),dim=1)
+    arr1 = arr[0:index]
+    arr2 = arr[index+1:]
+    return np.concatenate((arr1,arr2))
 
 def prepocess(feature):
-    N, H, W = feature.shape
-    feature = feature.view(N, H*W)
-    label = feature[:, 12]
-    feature = del_tensor_ele(feature, 12)
-    return feature.to(torch.float32), label.to(torch.float32)
+    H, W = feature.shape
+    feature = feature.reshape(H*W)
+    label = feature[int((H*W - 1) / 2)]
+    feature = del_tensor_ele(feature, int((H*W - 1) / 2))
+    return feature, label

@@ -1,10 +1,14 @@
 import os
 import numpy as np
 import random
+import rawpy
+import sys
+
 
 if __name__ == "__main__":
     pvalue_range = range(1024)
-    feature_dir = '../data/medium/feature/test'
+    feature_dir = '../data/medium/feature_13/test'
+    maxv, minv = 0, 1023
     npy_sample = np.load(os.path.join(feature_dir, os.listdir(feature_dir)[0]))
     H, W = npy_sample.shape
     range_size = H * W
@@ -20,7 +24,8 @@ if __name__ == "__main__":
             feature = np.load(os.path.join(feature_dir, npy)).reshape(H * W)
             corrupt_pixels = random.sample(sel_range, corrupt_num + 1)
             for cp in corrupt_pixels:
-                feature[cp] = random.choice(pvalue_range)
+                # feature[cp] = random.choice(pvalue_range)
+                feature[cp] = random.choice((minv, maxv))
             feature.resize(H, W)
             np.save(os.path.join(corrupt_dir, npy), feature)
         

@@ -1,7 +1,6 @@
 import os
 import argparse
 import torch
-from utils.prepocess import *
 from dataset import SamsungDataset
 from torch.utils.data import DataLoader
 from utils.logger import get_logger
@@ -10,8 +9,7 @@ import numpy as np
 
 def cal_mean_median(test_set):
     loss_mean, loss_median, normalize_term = 0, 0, 0
-    for i, feature in enumerate(test_set):
-        feature, label = prepocess(feature)
+    for i, (feature, label) in enumerate(test_set):
         input, target = feature.numpy(), label.numpy()
 
         input_mean = np.mean(input, axis=1)
@@ -28,7 +26,7 @@ def cal_mean_median(test_set):
 def test(args, test_file):
     test_data = SamsungDataset(args.data_path, test_file)
     test_set = DataLoader(test_data, batch_size=1)
-    
+    img_size = int(pow(len(test_data[0][0]) + 1, 0.5))
     save_path = args.model_path.split('train')[0]
     exp_dir = save_path.split('/')[2]
     test_save_path = os.path.join(save_path, args.mode)
@@ -44,10 +42,10 @@ def test(args, test_file):
     test_loss, normalize_term = 0, 0
 
     logger.info("Start Testing...")
+    
     with torch.no_grad():
-        for i, feature in enumerate(test_set):
-            feature, label = prepocess(feature)
-            feature, label = feature.to(device), label.to(device)
+        for i, (feature, label) in enumerate(test_set):
+            feature, label = feature.to(torch.float32).to(device), label.to(torch.float32).to(device)
             predict = model(feature)
             predict = predict.view(len(predict))
             loss = criterion(predict, label)
@@ -55,41 +53,47 @@ def test(args, test_file):
             test_loss += loss.item()  
     test_loss /= normalize_term
     logger.info(f"Test NMSE: {test_loss}")
-    if test_file == 'test':
-        mean_NMSE, median_NMSE = cal_mean_median(test_set)
-        logger.info(f"Mean NMSE: {mean_NMSE}")
-        logger.info(f"Median NMSE: {median_NMSE}")
+
+    mean_NMSE, median_NMSE = cal_mean_median(test_set)
+    logger.info(f"Mean NMSE: {mean_NMSE}")
+    logger.info(f"Median NMSE: {median_NMSE}")
+
+    if args.mode == 'test':    
         losses_vec = [mean_NMSE, median_NMSE, test_loss]
         cate_vec = ['Mean', 'Median', 'MLP']
         plot_mean_median(cate_vec, losses_vec, test_save_path)
-
+    
     logger.info("Test Completed.")
-    return test_loss, test_save_path
+    return img_size, test_loss, mean_NMSE, median_NMSE, test_save_path
 
 
-def lanuch(args):
+def lanuch(args):    
     if args.mode == 'test':
         test(args, args.mode)
     elif args.mode == 'corrupt':
-        NMSE_vec = []
-        test_amt = len(os.listdir(os.path.join(args.data_path, 'feature', args.mode))) + 1
+        NMSE_vec, mean_vec, median_vec = [], [], []
+        test_amt = len(os.listdir(os.path.join(args.data_path, args.mode))) + 1
         for i in range(test_amt):
             if i == 0:
-                standard_NMSE, _ = test(args, 'test')
+                _, standard_NMSE, standard_mean_NMSE, standard_median_NMSE, _ = test(args, 'test')
                 NMSE_vec.append(standard_NMSE)
+                mean_vec.append(standard_mean_NMSE)
+                median_vec.append(standard_median_NMSE)
             else:
                 test_file = f'{args.mode}/{args.mode}_{i}'
-                corrupt_NMSE, test_save_path = test(args, test_file)
+                img_size, corrupt_NMSE, mean_NMSE, median_NMSE, test_save_path = test(args, test_file)
                 NMSE_vec.append(corrupt_NMSE)
-        plot_NMSE(NMSE_vec, test_save_path)
+                mean_vec.append(mean_NMSE)
+                median_vec.append(median_NMSE)
+        plot_NMSE(img_size, NMSE_vec, mean_vec, median_vec, test_save_path)
     else:
         print(f"No mode named {args.mode}")
     
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument('--mode', type=str, default='test')
-    parser.add_argument('--data_path', type=str, default='data/medium')
+    parser.add_argument('--mode', type=str, default='corrupt')
+    parser.add_argument('--data_path', type=str, default='data/medium/feature')
     parser.add_argument('--model_path', type=str, default='results/mlp/exp/train/weights/best.pt')
     args = parser.parse_args()
     lanuch(args)

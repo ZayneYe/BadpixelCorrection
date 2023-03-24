@@ -15,5 +15,3 @@ if __name__ == "__main__":
                 shutil.copy(file_path, data_dir)
                 shutil.move(os.path.join(data_dir, file), os.path.join(data_dir, new_file))
                 cnt += 1
-
-

@@ -33,11 +33,11 @@ def resize_dng(raw_data):
 
 if __name__ == "__main__":
     random.seed(77)
-    cut_size = 5
+    cut_size = 9
     sample_amt = 25 #should be a square number
 
     data_dir = '../data/medium_dng'
-    feature_dir = '../data/medium/feature'
+    feature_dir = '../data/medium/feature_9'
    
     if not os.path.exists(feature_dir):
         os.makedirs(feature_dir)
@@ -52,8 +52,8 @@ if __name__ == "__main__":
         H, W = resized_data.shape
         cut_data = np.zeros((cut_size, cut_size))
         
-        i_sel = random.sample(range(0, H, cut_size), int(pow(sample_amt, 0.5)))
-        j_sel = random.sample(range(0, W, cut_size), int(pow(sample_amt, 0.5)))
+        i_sel = random.sample(range(0, H - cut_size, cut_size), int(pow(sample_amt, 0.5)))
+        j_sel = random.sample(range(0, W - cut_size, cut_size), int(pow(sample_amt, 0.5)))
         
         for i in i_sel:
             for j in j_sel:
