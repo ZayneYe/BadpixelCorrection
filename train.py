@@ -11,10 +11,10 @@ from utils.plot import plot_learning_curve
 
 class PixelCalculate():
     def __init__(self, args):
-        train_data = SamsungDataset(args.data_path, 'train')
+        train_data = SamsungDataset(args.data_path, 'poison_train')
         self.train_set = DataLoader(train_data, batch_size=args.batch_size, shuffle=True)
 
-        val_data = SamsungDataset(args.data_path, 'val')
+        val_data = SamsungDataset(args.data_path, 'poison_val')
         self.val_set = DataLoader(val_data, batch_size=1, shuffle=False)
 
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -112,10 +112,10 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('--lr', type=float, default=0.01)
     parser.add_argument('--epochs', type=int, default=50)
-    parser.add_argument('--batch_size', type=int, default=128)
+    parser.add_argument('--batch_size', type=int, default=512)
     parser.add_argument('--val_step', type=int, default=2)
-    parser.add_argument('--data_path', type=str, default='data/medium/feature')
-    parser.add_argument('--model_path', type=str, default='results/mlp')
+    parser.add_argument('--data_path', type=str, default='data/medium2/feature_5')
+    parser.add_argument('--model_path', type=str, default='results/mlp_curation')
     args = parser.parse_args()
     pc = PixelCalculate(args)
     pc.train()
