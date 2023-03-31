@@ -4,7 +4,7 @@ import random
 
 if __name__ == "__main__":
     mode = 'posion'
-    feature_dir = '../data/medium2/feature_13/train'
+    feature_dir = '../data/medium2/feature_5/val'
     if mode == 'corrupt':
         npy_sample = np.load(os.path.join(feature_dir, os.listdir(feature_dir)[0]))
 
@@ -19,7 +19,7 @@ if __name__ == "__main__":
                 break
     
     elif mode == 'posion':
-        cate = 'train'
+        cate = 'val'
         corrupt_dir = os.path.join(feature_dir.split(cate)[0], f'poison_{cate}')
         correct_vec = {0:0, 1:0, 2:0, 'wrong':0}
         for npy in os.listdir(feature_dir):

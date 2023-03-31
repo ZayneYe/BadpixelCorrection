@@ -11,7 +11,7 @@ def myround(amt):
 
 def bad_pixel(feature_dir, feature_vec, poison_dir, sel_range, bad_num):
     maxv, minv = 0, 1023
-    print(len(feature_vec))
+    
     for i, npy in enumerate(feature_vec):
         feature = np.load(os.path.join(feature_dir, npy)).reshape(H * W)
         corrupt_pixels = random.sample(sel_range, bad_num)
@@ -21,11 +21,13 @@ def bad_pixel(feature_dir, feature_vec, poison_dir, sel_range, bad_num):
         feature.resize(H, W)
         np.save(os.path.join(poison_dir, npy), feature)
         # print(f'{i} posioned .npy file saved.')
+    print(f'{len(feature_vec)} corrupted .npy file has generated.')
 
 
 if __name__ == "__main__":
-    cate = 'val'
-    feature_dir = os.path.join('../data/medium2/feature_5', cate)
+    use_distribution = False
+    cate = 'train'
+    feature_dir = os.path.join('../data/medium1/feature_5', cate)
     poison_dir = os.path.join(feature_dir.split(cate)[0], f'poison_{cate}')
     npy_sample = np.load(os.path.join(feature_dir, os.listdir(feature_dir)[0]))
     H, W = npy_sample.shape
@@ -36,7 +38,7 @@ if __name__ == "__main__":
     amt = len(os.listdir(feature_dir))
     amt_0 = myround(amt * 0.99)
     amt_1 = myround(amt * 0.008) 
-    print(amt_0, amt_1, amt - amt_0 - amt_1)
+    print(f'{amt} .npy file in total, splited to: 0 bad pixel: {amt_0} , 1 bad pixel: {amt_1}, 2 bad pixel: {amt - amt_0 - amt_1}')
 
     if not os.path.exists(poison_dir):
         os.makedirs(poison_dir)
@@ -44,6 +46,10 @@ if __name__ == "__main__":
     feature_vec = os.listdir(feature_dir)
     random.seed(66)
     random.shuffle(feature_vec)
-    bad_pixel(feature_dir, feature_vec[:amt_0], poison_dir, sel_range, 0)
-    bad_pixel(feature_dir, feature_vec[amt_0:amt_0+amt_1], poison_dir, sel_range, 1)
-    bad_pixel(feature_dir, feature_vec[amt_0+amt_1:], poison_dir, sel_range, 2)
+    if use_distribution:
+        bad_pixel(feature_dir, feature_vec[:amt_0], poison_dir, sel_range, 0)
+        bad_pixel(feature_dir, feature_vec[amt_0:amt_0+amt_1], poison_dir, sel_range, 1)
+        bad_pixel(feature_dir, feature_vec[amt_0+amt_1:], poison_dir, sel_range, 2)
+    else:
+        bad_pixel(feature_dir, feature_vec, poison_dir, sel_range, 1)
+    
