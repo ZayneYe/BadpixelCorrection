@@ -22,7 +22,7 @@ def plot_NMSE(img_size, test_loss_vec, mean_loss_vec, median_loss_vec, save_path
     plt.legend(loc="upper left")
     plt.savefig(os.path.join(save_path, 'Test_NMSE.png'))
 
-def plot_multi_NMSE(nmses_dict, save_path):
+def plot_multisize_NMSE(nmses_dict, save_path):
     plt.figure()
     plt.title(f"Comparison of MLPs using different patches")
     plt.xlabel('Number of corrupted pixels')
@@ -30,7 +30,7 @@ def plot_multi_NMSE(nmses_dict, save_path):
     for patch_size in nmses_dict:
         plt.plot(nmses_dict[patch_size], label=f'{patch_size}x{patch_size} MLP')
     plt.legend(loc="upper left")
-    plt.savefig(os.path.join(save_path, 'Multi_NMSE.png'))
+    plt.savefig(os.path.join(save_path, 'Multisize_NMSE.png'))
 
 def plot_mean_median(cate_vec, loss_vec, save_path):
     plt.figure()
@@ -40,3 +40,13 @@ def plot_mean_median(cate_vec, loss_vec, save_path):
         plt.text(x, y, '%.4f' % y, ha='center', va='bottom')
     plt.bar(cate_vec, loss_vec, width=0.25)
     plt.savefig(os.path.join(save_path, 'Test_NMSE.png'))
+
+def plot_multimodel_NMSE(nmses_dict, save_path):
+    plt.figure()
+    plt.title(f"Comparison of MLPs trained by different data")
+    plt.xlabel('Number of corrupted pixels')
+    plt.ylabel('Test NMSE')
+    for model in nmses_dict:
+        plt.plot(range(len(nmses_dict)),nmses_dict[model], label=f'{model}')
+    plt.legend(loc="upper left")
+    plt.savefig(os.path.join(save_path, 'Multimodel_NMSE.png'))

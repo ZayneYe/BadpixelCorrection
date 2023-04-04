@@ -3,7 +3,7 @@ import argparse
 import torch
 from dataset import SamsungDataset
 from torch.utils.data import DataLoader
-from utils.plot import plot_multi_NMSE
+from utils.plot import plot_multisize_NMSE, plot_multimodel_NMSE
 
 
 def test(model_path, test_path, test_file):
@@ -33,9 +33,11 @@ def test(model_path, test_path, test_file):
     return test_loss
 
 
-def lanuch(args):
+def multisize_lanuch(args):
     nmse_dict = {}
-    save_path = args.model_path.split('/exp/')[0]
+    save_path = os.path.join(args.model_path.split('/')[0], args.mode)
+    if not os.path.exists(save_path):
+        os.makedirs(save_path)
     for feature_dir in os.listdir(args.data_path):
         nmse_vec = []
         path_size = int(feature_dir.split('_')[1])
@@ -59,15 +61,41 @@ def lanuch(args):
                 corrupt_nmse = test(model_path, test_path, test_file)
                 nmse_vec.append(corrupt_nmse)
         nmse_dict[path_size] = nmse_vec
-    plot_multi_NMSE(nmse_dict, save_path)
+    plot_multisize_NMSE(nmse_dict, save_path)
 
+
+def multimodel_lanuch(args):
+    model_amt, corrupt_amt = 3, 3
+    save_path = os.path.join(args.model_path.split('/')[0], args.mode)
+    if not os.path.exists(save_path):
+        os.makedirs(save_path)
+    
+    nmse_dict = {}
+    for i in range(model_amt):
+        model_path = os.path.join(args.model_path.split('/mlp/')[0], f'mlp{i}', args.model_path.split('/mlp/')[1])
+        nmse_vec = []
+        for j in range(corrupt_amt):
+            test_path = os.path.join(args.data_path, f'feature_5')
+            if j == 0:
+                standrad_test_nmse = test(model_path, test_path, 'test')
+                nmse_vec.append(standrad_test_nmse)
+            else:
+                test_file = f'corrupt/corrupt_{j}'
+                corrupt_nmse = test(model_path, test_path, test_file)
+                nmse_vec.append(corrupt_nmse)
+        nmse_dict[f'model_{i}'] = nmse_vec
+    plot_multimodel_NMSE(nmse_dict, save_path)
+                
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument('--mode', type=str, default='test')
+    parser.add_argument('--mode', type=str, default='multimodel')
     parser.add_argument('--init_size', type=int, default=5)
     parser.add_argument('--expand_size', type=int, default=4)
-    parser.add_argument('--data_path', type=str, default='data/medium')
+    parser.add_argument('--data_path', type=str, default='data/medium1')  
     parser.add_argument('--model_path', type=str, default='results/mlp/exp/train/weights/best.pt')
     args = parser.parse_args()
-    lanuch(args)
+    if args.mode == 'multisize':
+        multisize_lanuch(args)
+    elif args.mode == 'multimodel':
+        multimodel_lanuch(args)

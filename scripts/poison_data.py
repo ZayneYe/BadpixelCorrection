@@ -26,7 +26,7 @@ def bad_pixel(feature_dir, feature_vec, poison_dir, sel_range, bad_num):
 
 if __name__ == "__main__":
     use_distribution = False
-    cate = 'train'
+    cate = 'val'
     feature_dir = os.path.join('../data/medium1/feature_5', cate)
     poison_dir = os.path.join(feature_dir.split(cate)[0], f'poison_{cate}')
     npy_sample = np.load(os.path.join(feature_dir, os.listdir(feature_dir)[0]))
