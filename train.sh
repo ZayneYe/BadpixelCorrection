@@ -1,4 +1,4 @@
 python train.py \
---use_poison False \
---data_path data/medium1/feature_5 \
---model_path results/mlp0
+--use_poison 1 \
+--data_path data/medium2/feature_5 \
+--model_path results/mlp2

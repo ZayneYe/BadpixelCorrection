@@ -14,9 +14,13 @@ class PixelCalculate():
         if args.use_poison:
             train_data = SamsungDataset(args.data_path, 'poison_train')
             val_data = SamsungDataset(args.data_path, 'poison_val')
+            train_path = os.path.join(args.data_path, 'poison_train')
+            val_path = os.path.join(args.data_path, 'poison_val')
         else:
             train_data = SamsungDataset(args.data_path, 'train')
             val_data = SamsungDataset(args.data_path, 'val')
+            train_path = os.path.join(args.data_path, 'train')
+            val_path = os.path.join(args.data_path, 'val')
         
         self.train_set = DataLoader(train_data, batch_size=args.batch_size, shuffle=True)
         self.val_set = DataLoader(val_data, batch_size=1, shuffle=False)
@@ -45,6 +49,8 @@ class PixelCalculate():
         os.makedirs(self.weights_path)
 
         self.logger = get_logger(os.path.join(self.save_path, f'{exp_dir}_train.log'))
+        self.logger.info(vars(args))
+        self.logger.info(f"Reading training data from {train_path}, validation data from {val_path}.")
         
         
     def save_model(self, save_path, file_name):

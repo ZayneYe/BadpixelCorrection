@@ -46,7 +46,23 @@ def plot_multimodel_NMSE(nmses_dict, save_path):
     plt.title(f"Comparison of MLPs trained by different data")
     plt.xlabel('Number of corrupted pixels')
     plt.ylabel('Test NMSE')
-    for model in nmses_dict:
-        plt.plot(range(len(nmses_dict)),nmses_dict[model], label=f'{model}')
+    plt.xticks(range(len(nmses_dict)), range(len(nmses_dict)))
+    plt.grid()
+    for i, model in enumerate(nmses_dict):
+        if i == 0:
+            plt.plot(range(len(nmses_dict)), nmses_dict[model], label=f'{model}', color='blue')
+            plt.scatter(range(len(nmses_dict)), nmses_dict[model], color='blue', marker='o', s=10)
+            for x, y in zip(range(len(nmses_dict)), nmses_dict[model]):
+                plt.text(x, y, '%.4f' % y, ha='center', va='center', color='blue')
+        elif i == 1:
+            plt.plot(range(len(nmses_dict)), nmses_dict[model], label=f'{model}', color='orange')
+            plt.scatter(range(len(nmses_dict)), nmses_dict[model], color='orange', marker='^', s=10)
+            for x, y in zip(range(len(nmses_dict)), nmses_dict[model]):
+                plt.text(x, y, '%.4f' % y, ha='center', va='bottom', color='orange')
+        elif i == 2:
+            plt.plot(range(len(nmses_dict)), nmses_dict[model], label=f'{model}', color='green')
+            plt.scatter(range(len(nmses_dict)), nmses_dict[model], color='green', marker='s', s=10)
+            for x, y in zip(range(len(nmses_dict)), nmses_dict[model]):
+                plt.text(x, y, '%.4f' % y, ha='center', va='top', color='green')
     plt.legend(loc="upper left")
     plt.savefig(os.path.join(save_path, 'Multimodel_NMSE.png'))

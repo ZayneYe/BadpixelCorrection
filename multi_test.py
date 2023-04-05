@@ -83,7 +83,7 @@ def multimodel_lanuch(args):
                 test_file = f'corrupt/corrupt_{j}'
                 corrupt_nmse = test(model_path, test_path, test_file)
                 nmse_vec.append(corrupt_nmse)
-        nmse_dict[f'model_{i}'] = nmse_vec
+        nmse_dict[f'model_{i + 1}'] = nmse_vec
     plot_multimodel_NMSE(nmse_dict, save_path)
                 
 
