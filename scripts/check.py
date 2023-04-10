@@ -5,7 +5,7 @@ import shutil
 
 if __name__ == "__main__":
     mode = 'posion'
-    feature_dir = '../data/medium1/feature_5/train'
+    feature_dir = '../data/medium2/feature_5/train'
     if mode == 'corrupt':
         npy_sample = np.load(os.path.join(feature_dir, os.listdir(feature_dir)[0]))
 

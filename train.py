@@ -22,8 +22,8 @@ class PixelCalculate():
             train_path = os.path.join(args.data_path, 'train')
             val_path = os.path.join(args.data_path, 'val')
         
-        self.train_set = DataLoader(train_data, batch_size=args.batch_size, shuffle=True)
-        self.val_set = DataLoader(val_data, batch_size=1, shuffle=False)
+        self.train_set = DataLoader(train_data, batch_size=args.batch_size, num_workers=8, shuffle=True)
+        self.val_set = DataLoader(val_data, batch_size=1, num_workers=8, shuffle=False)
 
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.lr = args.lr

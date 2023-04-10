@@ -21,13 +21,14 @@ def bad_pixel(feature_dir, feature_vec, poison_dir, sel_range, bad_num):
         feature.resize(H, W)
         np.save(os.path.join(poison_dir, npy), feature)
         # print(f'{i} posioned .npy file saved.')
-    print(f'{len(feature_vec)} corrupted .npy file has generated.')
+    print(f'{len(feature_vec)} corrupted .npy file with {bad_num} bad pixels has generated.')
 
 
 if __name__ == "__main__":
     use_distribution = False
-    cate = 'val'
-    feature_dir = os.path.join('../data/medium1/feature_5', cate)
+    bad_num = 4
+    cate = 'train'
+    feature_dir = os.path.join('../data/medium4_68750/feature_5', cate)
     poison_dir = os.path.join(feature_dir.split(cate)[0], f'poison_{cate}')
     npy_sample = np.load(os.path.join(feature_dir, os.listdir(feature_dir)[0]))
     H, W = npy_sample.shape
@@ -37,8 +38,9 @@ if __name__ == "__main__":
 
     amt = len(os.listdir(feature_dir))
     amt_0 = myround(amt * 0.99)
-    amt_1 = myround(amt * 0.008) 
-    print(f'{amt} .npy file in total, splited to: 0 bad pixel: {amt_0} , 1 bad pixel: {amt_1}, 2 bad pixel: {amt - amt_0 - amt_1}')
+    amt_1 = myround(amt * 0.008)
+    if use_distribution:
+        print(f'{amt} .npy file in total, splited to: 0 bad pixel: {amt_0} , 1 bad pixel: {amt_1}, 2 bad pixel: {amt - amt_0 - amt_1}')
 
     if not os.path.exists(poison_dir):
         os.makedirs(poison_dir)
@@ -51,5 +53,5 @@ if __name__ == "__main__":
         bad_pixel(feature_dir, feature_vec[amt_0:amt_0+amt_1], poison_dir, sel_range, 1)
         bad_pixel(feature_dir, feature_vec[amt_0+amt_1:], poison_dir, sel_range, 2)
     else:
-        bad_pixel(feature_dir, feature_vec, poison_dir, sel_range, 1)
+        bad_pixel(feature_dir, feature_vec, poison_dir, sel_range, bad_num)
     
