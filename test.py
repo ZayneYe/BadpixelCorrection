@@ -6,6 +6,7 @@ from torch.utils.data import DataLoader
 from utils.logger import get_logger
 from utils.plot import plot_NMSE, plot_mean_median
 import numpy as np
+from tqdm import tqdm
 
 def cal_mean_median(test_set):
     loss_mean, loss_median, normalize_term = 0, 0, 0
@@ -44,13 +45,16 @@ def test(args, test_file):
     logger.info("Start Testing...")
     
     with torch.no_grad():
-        for i, (feature, label) in enumerate(test_set):
-            feature, label = feature.to(torch.float32).to(device), label.to(torch.float32).to(device)
-            predict = model(feature)
-            predict = predict.view(len(predict))
-            loss = criterion(predict, label)
-            normalize_term += sum(pow(label, 2)).item() / len(label)
-            test_loss += loss.item()  
+        with tqdm(total=len(test_set), desc=f'Test', unit='batch') as pbar:
+            for i, (feature, label) in enumerate(test_set):
+                feature, label = feature.to(torch.float32).to(device), label.to(torch.float32).to(device)
+                predict = model(feature)
+                predict = predict.view(len(predict))
+                loss = criterion(predict, label)
+                normalize_term += sum(pow(label, 2)).item() / len(label)
+                test_loss += loss.item()
+                pbar.set_postfix({'loss': loss.item()})
+                pbar.update()
     test_loss /= normalize_term
     logger.info(f"Test NMSE: {test_loss}")
 
