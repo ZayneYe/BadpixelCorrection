@@ -24,7 +24,7 @@ class PixelCalculate():
             val_path = os.path.join(args.data_path, 'val')
         
         self.train_set = DataLoader(train_data, batch_size=args.batch_size, num_workers=args.num_workers, shuffle=True)
-        self.val_set = DataLoader(val_data, batch_size=1, num_workers=args.num_workers, shuffle=False)
+        self.val_set = DataLoader(val_data, batch_size=args.batch_size, num_workers=args.num_workers, shuffle=False)
 
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.lr = args.lr
@@ -76,6 +76,7 @@ class PixelCalculate():
                     val_loss += loss.item()
                     pbar.set_postfix({'loss': loss.item()})
                     pbar.update()
+                pbar.close()
         val_loss /= normalize_term
         return val_loss
 
@@ -88,8 +89,9 @@ class PixelCalculate():
         train_loss, val_loss, normalize_term, min_val_loss = 0, 0, 0, sys.maxsize
         loss_vec, val_loss_vec, val_vec = [], [], []
         model.train()
-        with tqdm(total=len(self.train_set), desc=f'Train', unit='batch') as pbar:
-            for epoch in range(self.epochs):
+        
+        for epoch in range(self.epochs):
+            with tqdm(total=len(self.train_set), desc=f'Train', unit='batch') as pbar:
                 for i, (feature, label) in enumerate(self.train_set):
                     feature, label = feature.to(torch.float32).to(self.device), label.to(torch.float32).to(self.device)
                     optimizer.zero_grad()
@@ -102,24 +104,25 @@ class PixelCalculate():
                     optimizer.step()
                     pbar.set_postfix({'loss': loss.item()})
                     pbar.update()
+                pbar.close()
                 
-                train_loss /= normalize_term
-                loss_vec.append(train_loss)
-                info = f"Epoch: {epoch + 1}\tTraining NMSE: {train_loss}"
-                if (epoch + 1) % self.val_step:
-                    self.logger.info(info)
-                else:
-                    val_loss = self.validate()
-                    info += f"\tValidation NMSE: {val_loss}"
-                    self.logger.info(info)
-                    val_vec.append(epoch + 1)
-                    val_loss_vec.append(val_loss)
+            train_loss /= normalize_term
+            loss_vec.append(train_loss)
+            info = f"Epoch: {epoch + 1}\tTraining NMSE: {train_loss}"
+            if (epoch + 1) % self.val_step:
+                self.logger.info(info)
+            else:
+                val_loss = self.validate()
+                info += f"\tValidation NMSE: {val_loss}"
+                self.logger.info(info)
+                val_vec.append(epoch + 1)
+                val_loss_vec.append(val_loss)
 
-                    self.save_model(self.weights_path, 'last')
-                    if val_loss < min_val_loss:
-                        # self.lr /= 2
-                        min_val_loss = val_loss
-                        self.save_model(self.weights_path, 'best')
+                self.save_model(self.weights_path, 'last')
+                if val_loss < min_val_loss:
+                    # self.lr /= 2
+                    min_val_loss = val_loss
+                    self.save_model(self.weights_path, 'best')
             
         self.logger.info("Training Completed.")
         plot_learning_curve(loss_vec, val_vec, val_loss_vec, self.save_path)
