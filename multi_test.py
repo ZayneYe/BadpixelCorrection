@@ -65,14 +65,17 @@ def multisize_lanuch(args):
 
 
 def multimodel_lanuch(args):
-    model_amt, corrupt_amt = 3, 3
+    model_amt, corrupt_amt = 6, 5
     save_path = os.path.join(args.model_path.split('/')[0], args.mode)
     if not os.path.exists(save_path):
         os.makedirs(save_path)
     
     nmse_dict = {}
     for i in range(model_amt):
-        model_path = os.path.join(args.model_path.split('/mlp/')[0], f'mlp{i}', args.model_path.split('/mlp/')[1])
+        if i == 5:
+            model_path = args.model_path
+        else:
+            model_path = os.path.join(args.model_path.split('/mlp_dist/')[0], f'mlp{i}', args.model_path.split('/mlp_dist/')[1])
         nmse_vec = []
         for j in range(corrupt_amt):
             test_path = os.path.join(args.data_path, f'feature_5')
@@ -83,7 +86,10 @@ def multimodel_lanuch(args):
                 test_file = f'corrupt/corrupt_{j}'
                 corrupt_nmse = test(model_path, test_path, test_file)
                 nmse_vec.append(corrupt_nmse)
-        nmse_dict[f'model_{i + 1}'] = nmse_vec
+        if i == 5:
+            nmse_dict[f'model_dist'] = nmse_vec
+        else:     
+            nmse_dict[f'model_{i}'] = nmse_vec
     plot_multimodel_NMSE(nmse_dict, save_path)
                 
 
@@ -93,7 +99,7 @@ if __name__ == "__main__":
     parser.add_argument('--init_size', type=int, default=5)
     parser.add_argument('--expand_size', type=int, default=4)
     parser.add_argument('--data_path', type=str, default='data/medium1')  
-    parser.add_argument('--model_path', type=str, default='results/mlp/exp/train/weights/best.pt')
+    parser.add_argument('--model_path', type=str, default='results2/mlp_dist/exp/train/weights/best.pt')
     args = parser.parse_args()
     if args.mode == 'multisize':
         multisize_lanuch(args)

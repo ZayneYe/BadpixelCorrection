@@ -31,7 +31,7 @@ class PixelCalculate():
         self.epochs = args.epochs
         self.patch_size = len(train_data[0][0])
         self.val_step = args.val_step
-        self.model = torch.nn.DataParallel(MLP_2L(self.patch_size).to(self.device))
+        self.model = torch.nn.DataParallel(MLP_2L(self.patch_size).to(self.device), device_ids=args.device)
         self.model_path = args.model_path
     
         self.criterion = torch.nn.MSELoss()
@@ -132,10 +132,11 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('--lr', type=float, default=0.01)
     parser.add_argument('--epochs', type=int, default=50)
-    parser.add_argument('--num_workers', type=int, default=8)
+    parser.add_argument('--num_workers', type=int, default=32)
+    parser.add_argument('--device', type=int, nargs='+', default=0)
     parser.add_argument('--batch_size', type=int, default=1024)
     parser.add_argument('--val_step', type=int, default=2)
-    parser.add_argument('--use_poison', type=bool, default=False)
+    parser.add_argument('--use_poison', action='store_true')
     parser.add_argument('--data_path', type=str, default='data/medium1/feature_5')
     parser.add_argument('--model_path', type=str, default='results/mlp0')
     args = parser.parse_args()

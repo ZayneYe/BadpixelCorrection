@@ -1,0 +1,3 @@
+medium:  feature_5, feature_9, feature_14: all 2750 in total: corrupt: test dataset with 1 to 10 bad pixels
+medium1: feature_5: 24750 in total: poison_train, poison_val: one bad pixel; corrupt: test dataset with 1 to 10 bad pixels
+medium_dist: feature_5, feature_13: 24750 in total: poison_train, poison_val: 0.99 no bad pixel, 0.008 one bad pixel, 0.002 two bad pixel; corrupt: test dataset with 1 to 10 bad pixels

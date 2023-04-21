@@ -7,7 +7,7 @@ import sys
 
 if __name__ == "__main__":
     pvalue_range = range(1024)
-    feature_dir = '../data/medium/feature_13/test'
+    feature_dir = '../data/medium0_68750/feature_5/test'
     maxv, minv = 0, 1023
     npy_sample = np.load(os.path.join(feature_dir, os.listdir(feature_dir)[0]))
     H, W = npy_sample.shape
