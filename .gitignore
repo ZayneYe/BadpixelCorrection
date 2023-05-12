@@ -9,3 +9,5 @@
 *.png
 *.out
 result*
+*.sh
+*.job
