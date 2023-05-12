@@ -27,13 +27,16 @@ def plot_NMSE(img_size, test_loss_vec, mean_loss_vec, median_loss_vec, save_path
 def plot_multisize_NMSE(nmses_dict, save_path):
     nmses_vec = sorted(nmses_dict.items(), key=lambda x:x[0])
     nmses_dict = dict(nmses_vec)
-    plt.figure()
-    plt.title(f"Comparison of MLPs using different patches")
-    plt.xlabel('Number of corrupted pixels')
-    plt.ylabel('Test NMSE') 
+    plt.figure(figsize=(8,6))
+    plt.title(f"Comparison of MLPs using different patches", size=18)
+    plt.xlabel('Number of corrupted pixels', size=18)
+    plt.ylabel('Test NMSE', size=18)
+    plt.xticks(size=18)
+    plt.yticks(size=18)
     for patch_size in nmses_dict:
         plt.plot(nmses_dict[patch_size], label=f'{patch_size}x{patch_size} patches')
-    plt.legend(loc="upper left")
+        plt.scatter(range(len(nmses_dict[patch_size])), nmses_dict[patch_size], marker='o')
+    plt.legend(loc="upper left",  prop ={'size':15})
     plt.grid()
     plt.savefig(os.path.join(save_path, 'Multisize_NMSE.png'))
 
@@ -50,26 +53,29 @@ def plot_multimodel_NMSE(nmses_dict, save_path):
     df = pd.DataFrame(nmses_dict)
     df.to_excel(os.path.join(save_path, 'nmse.xlsx'), index=False, engine='openpyxl')
     plt.figure(figsize=(8,6))
-    plt.title(f"Comparison of MLPs trained by different data")
-    plt.xlabel('Number of corrupted pixels')
-    plt.ylabel('Test NMSE')
+    plt.title("Comparison of MLPs trained by different data", size=18)
+    plt.xlabel('Number of corrupted pixels', size=18)
+    plt.ylabel('Test NMSE', size=18)
     xticks = range(len(nmses_dict['model_1']))
-    plt.xticks(xticks)
-    # yticks = [0, 0.01, 0.02, 0.05, 0.1, 0.2, 0.5, 0.8]
-    # plt.yticks(yticks)
+    plt.xticks(xticks, size=18)
     plt.yscale('log')
+    plt.yticks(size=18)
     plt.grid()
-    color_vec = ['r', 'b', 'g', 'y', 'c', 'm', 'k']
+    color_vec = ['r', 'b', 'y', 'c', 'm', 'k', 'g',]
     for i, model in enumerate(nmses_dict):
         if model == 'model_dist':
             continue
         model_order = model.split('_')[1]
         x_vec = range(len(nmses_dict[model]))
         y_vec = nmses_dict[model]
-        plt.plot(x_vec, y_vec, label=f'model trained on dataset with {model_order} corrupted pixels', color=color_vec[i])
-        plt.scatter(x_vec, y_vec, color=color_vec[i], marker='o', s=10)
+        if model_order == '0' or model_order == '1':
+            legend = f'Trained with {model_order} corrupted pixel'
+        else:
+            legend = f'Trained with {model_order} corrupted pixels'
+        plt.plot(x_vec, y_vec, label=legend, color=color_vec[i])
+        plt.scatter(x_vec, y_vec, color=color_vec[i], marker='o')
         # for x, y in zip(x_vec, y_vec):
         #     plt.text(x, y, '%.4f' % y, ha='center', va='center', color=color_vec[i])
     
-    plt.legend(loc="upper left")
+    plt.legend(loc="upper left", prop ={'size':15})
     plt.savefig(os.path.join(save_path, 'Multimodel_NMSE.png'))

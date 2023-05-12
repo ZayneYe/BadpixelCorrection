@@ -16,12 +16,12 @@ def compute_pixel(data_dir):
             min_pixel = np.min(raw_data)
         return max_pixel, min_pixel
 
-def resize_dng(raw_data):
+def resize_dng(raw_data, cut_size):
     H, W = raw_data.shape
     H_, W_ = H, W
-    while H_ % 5:
+    while H_ % cut_size:
         H_ += 1
-    while W_ % 5:
+    while W_ % cut_size:
         W_ += 1
     dng_resized = np.zeros((H_, W_))
     h_start = math.floor((H_ - H) / 2)
@@ -34,10 +34,10 @@ def resize_dng(raw_data):
 if __name__ == "__main__":
     random.seed(77)
     cut_size = 5
-    sample_amt = 625 #should be a square number
+    sample_amt = 225 #should be a square number
 
-    data_dir = '../data/medium_dng'
-    feature_dir = '../data/medium1_68750/feature_5'
+    data_dir = '/data1/SIDD/DNG_'
+    feature_dir = '../data/SIDD/feature_5'
    
     if not os.path.exists(feature_dir):
         os.makedirs(feature_dir)
@@ -48,7 +48,7 @@ if __name__ == "__main__":
     for dng in os.listdir(data_dir):
         raw = rawpy.imread(os.path.join(data_dir, dng))
         raw_data = raw.raw_image
-        resized_data = resize_dng(raw_data)
+        resized_data = resize_dng(raw_data, cut_size)
         H, W = resized_data.shape
         cut_data = np.zeros((cut_size, cut_size))
         
