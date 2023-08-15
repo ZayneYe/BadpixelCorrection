@@ -26,7 +26,7 @@ bad_num -> number of neighboring bad pixels in each patch
 
 5. Bad pixel injection into test images only for testing purposes
 python bad_pixels.py
-'''
+```
 
 Training
 ```
