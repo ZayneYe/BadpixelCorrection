@@ -28,7 +28,7 @@ if __name__ == "__main__":
     use_distribution = False
     bad_num = 4
     cate = 'train'
-    feature_dir = os.path.join('../data/medium4_68750/feature_5', cate)
+    feature_dir = os.path.join('../data/S7-ISP-Dataset/feature_5', cate)
     poison_dir = os.path.join(feature_dir.split(cate)[0], f'poison_{cate}')
     npy_sample = np.load(os.path.join(feature_dir, os.listdir(feature_dir)[0]))
     H, W = npy_sample.shape

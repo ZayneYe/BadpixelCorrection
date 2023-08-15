@@ -97,7 +97,7 @@ def lanuch(args):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('--mode', type=str, default='corrupt')
-    parser.add_argument('--data_path', type=str, default='data/medium/feature')
+    parser.add_argument('--data_path', type=str, default='data/S7-ISP-Dataset/feature_5')
     parser.add_argument('--model_path', type=str, default='results/mlp/exp/train/weights/best.pt')
     args = parser.parse_args()
     lanuch(args)

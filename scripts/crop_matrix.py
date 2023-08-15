@@ -34,10 +34,10 @@ def resize_dng(raw_data, cut_size):
 if __name__ == "__main__":
     random.seed(77)
     cut_size = 5
-    sample_amt = 225 #should be a square number
+    sample_amt = 625 #should be a square number
 
-    data_dir = '/data1/SIDD/DNG_'
-    feature_dir = '../data/SIDD/feature_5'
+    data_dir = '/data1/S7-ISP-Dataset/medium_dng'
+    feature_dir = '../data/S7-ISP-Dataset/feature_5'
    
     if not os.path.exists(feature_dir):
         os.makedirs(feature_dir)

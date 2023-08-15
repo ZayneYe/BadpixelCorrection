@@ -2,8 +2,8 @@ import os
 import shutil
 
 if __name__ == "__main__":
-    path = '../data/S7-ISP-Dataset'
-    data_dir = '../data/medium_dng'
+    path = '/data1/S7-ISP-Dataset'
+    data_dir = '/data1/S7-ISP-Dataset/medium_dng'
     if not os.path.exists(data_dir):
         os.makedirs(data_dir)
     cnt = 1

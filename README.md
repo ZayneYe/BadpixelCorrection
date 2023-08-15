@@ -1,16 +1,49 @@
-# SamsungPixelCaculation
- 
-This is the baseline network for predict the middle pixel value by pixels around it for the Samsung In-Pixel Computing project.
+# Bad Pixel Correction
 
-The folder hierarchy for the dataset should look like this:
+This code is for correction of the central pixel of a nxn patch using a 2-layer MLP
 
-<img width="95" alt="1678766420624" src="https://user-images.githubusercontent.com/106359260/224889848-bf2e552b-e403-42a9-8892-2e8fe63519e8.png">
+Dataset Preparation
+```
+1. Download Dataset
+Samsung S7 ISP Dataset: https://www.kaggle.com/datasets/knn165897/s7-isp-dataset
 
+2. Extract .dng images with medium exposure
+cd scripts/
+python create_dataset.py
 
-where the S7-ISP-Dataset is download from https://www.kaggle.com/datasets/knn165897/s7-isp-dataset.
+3. Extract patches from each image
+python crop_matrix.py
+cut_size -> size of each patch
+sample_amt -> number of patches to be extracted 
 
-To train:
+4. Split cropped patches into train, validation and test sets
+python split_dataset.py 
+
+4. Create a train set with multiple bad pixels
+python poison_data.py
+feature_dir -> folder containing cropped patches
+bad_num -> number of neighboring bad pixels in each patch
+
+5. Bad pixel injection into test images only for testing purposes
+python bad_pixels.py
+'''
+
+Training
+```
+Train on patches with no bad pixels in the neighborhood:
 python train.py
 
-To evaluate:
+Train on patches with one or more neighboring bad pixels
+cd scripts/
+python poison_data.py
+python train.py --use_poison
+```
+
+Testing
+```
+Test on patches with no neighboring bad pixels
 python test.py --mode test
+
+Test on patches with multiple neighboring bad pixels
+python test.py --mode corrupt
+```

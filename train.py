@@ -26,12 +26,12 @@ class PixelCalculate():
         self.train_set = DataLoader(train_data, batch_size=args.batch_size, num_workers=args.num_workers, shuffle=True)
         self.val_set = DataLoader(val_data, batch_size=args.batch_size, num_workers=args.num_workers, shuffle=False)
 
-        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        self.device = torch.device("cuda:{}".format(args.device) if torch.cuda.is_available() else "cpu")
         self.lr = args.lr
         self.epochs = args.epochs
         self.patch_size = len(train_data[0][0])
         self.val_step = args.val_step
-        self.model = torch.nn.DataParallel(MLP_2L(self.patch_size).to(self.device), device_ids=args.device)
+        self.model = torch.nn.DataParallel(MLP_2L(self.patch_size).to(self.device), device_ids=[args.device])
         self.model_path = args.model_path
     
         self.criterion = torch.nn.MSELoss()
@@ -136,8 +136,8 @@ if __name__ == "__main__":
     parser.add_argument('--device', type=int, nargs='+', default=0)
     parser.add_argument('--batch_size', type=int, default=1024)
     parser.add_argument('--val_step', type=int, default=2)
-    parser.add_argument('--use_poison', action='store_true')
-    parser.add_argument('--data_path', type=str, default='data/SIDD/feature_5')
+    parser.add_argument('--use_poison', action='store_true', help='train on patches with corrupted pixels in neighborhood')
+    parser.add_argument('--data_path', type=str, default='data/S7-ISP-Dataset/feature_5')
     parser.add_argument('--model_path', type=str, default='results3/mlp0')
     args = parser.parse_args()
     pc = PixelCalculate(args)
