@@ -2,7 +2,7 @@
 
 This code is for correction of the central pixel of a nxn patch using a 2-layer MLP
 
-Dataset Preparation
+**Dataset Preparation**
 ```
 1. Download Dataset
 Samsung S7 ISP Dataset: https://www.kaggle.com/datasets/knn165897/s7-isp-dataset
@@ -28,9 +28,10 @@ bad_num -> number of neighboring bad pixels in each patch
 python bad_pixels.py
 ```
 
-Training
+**Training**
+
+MLP
 ```
-** MLP**
 Train on patches with no bad pixels in the neighborhood:
 python train.py
 
@@ -38,12 +39,14 @@ Train on patches with one or more neighboring bad pixels
 cd scripts/
 python poison_data.py
 python train.py --use_poison
+```
 
-**ViT AE**
+ViT AE
+```
 python train_mae.py
 ```
 
-Testing
+**Testing**
 ```
 Test on patches with no neighboring bad pixels
 python test.py --mode test
