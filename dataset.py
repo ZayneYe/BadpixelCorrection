@@ -81,7 +81,7 @@ def preprocess(org_img, img, mask, idx, patch_num=64):
 
 def get_original_imgs_path(dataset):
     if dataset == 'S7-ISP':
-        return '/data1/Bad_Pixel_Detection/data/ISP_0.7/original_imgs'
+        return '/data1/Bad_Pixel_Detection/ISP_0.7/original_imgs'
     elif dataset == 'FiveK':
         return '/data1/Bad_Pixel_Detection/data/FiveK/original_images'
     else:

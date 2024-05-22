@@ -30,6 +30,7 @@ python bad_pixels.py
 
 Training
 ```
+** MLP**
 Train on patches with no bad pixels in the neighborhood:
 python train.py
 
@@ -37,6 +38,9 @@ Train on patches with one or more neighboring bad pixels
 cd scripts/
 python poison_data.py
 python train.py --use_poison
+
+**ViT AE**
+python train_mae.py
 ```
 
 Testing

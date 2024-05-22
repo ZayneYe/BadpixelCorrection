@@ -196,7 +196,7 @@ if __name__ == "__main__":
     parser.add_argument('--batch_size', type=int, default=2)
     parser.add_argument('--val_step', type=int, default=1)
     parser.add_argument('--patch_num', type=int, default=64)
-    parser.add_argument('--data_path', type=str, default='/data1/Bad_Pixel_Detection/data/ISP_0.7_0.7')
+    parser.add_argument('--data_path', type=str, default='/data1/Bad_Pixel_Detection/ISP_0.7_0.7')
     parser.add_argument('--model_path', type=str, default='MAE_ISP_0.7')
     # parser.add_argument('--model_path', type=str, default='debug')
     args = parser.parse_args()
