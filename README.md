@@ -60,12 +60,12 @@ python test.py --mode corrupt
 ## Citation
 If you find this repo useful for your research, please consider citing the following work:
 ```
-@InProceedings{sarkar_2024_CVPRW,
+@InProceedings{sarkar_2023_fixpix,
     author       = {Sarkar, Sreetama and Ye, Xinan and Datta, Gourav and Beerel, Peter},
     title        = {FixPix: Fixing Bad Pixels using Deep Learning}, 
     eprint       = {2310.11637},
     archivePrefix={arXiv},
     primaryClass ={eess.IV},
-    year         = {2024}
+    year         = {2023}
 }
 ```
