@@ -3,23 +3,24 @@ import os
 import sys
 import torch
 from tqdm import tqdm
-from dataset import SamsungDataset
+from dataset import SamsungDatasetSmall
 from torch.utils.data import DataLoader
 from model.model import MLP_2L
 from utils.logger import get_logger
 from utils.plot import plot_learning_curve
+from math import log10, sqrt
 
 
 class PixelCalculate():
     def __init__(self, args):
         if args.use_poison:
-            train_data = SamsungDataset(args.data_path, 'poison_train')
-            val_data = SamsungDataset(args.data_path, 'poison_val')
-            train_path = os.path.join(args.data_path, 'poison_train')
-            val_path = os.path.join(args.data_path, 'poison_val')
+            train_data = SamsungDatasetSmall(args.data_path, 'poison_train_0.7')
+            val_data = SamsungDatasetSmall(args.data_path, 'poison_val_0.7')
+            train_path = os.path.join(args.data_path, 'poison_train_0.7')
+            val_path = os.path.join(args.data_path, 'poison_val_0.7')
         else:
-            train_data = SamsungDataset(args.data_path, 'train')
-            val_data = SamsungDataset(args.data_path, 'val')
+            train_data = SamsungDatasetSmall(args.data_path, 'train')
+            val_data = SamsungDatasetSmall(args.data_path, 'val')
             train_path = os.path.join(args.data_path, 'train')
             val_path = os.path.join(args.data_path, 'val')
         
@@ -78,6 +79,7 @@ class PixelCalculate():
                     pbar.update()
                 pbar.close()
         val_loss /= normalize_term
+        # val_loss /= len(self.val_set)
         return val_loss
 
 
@@ -125,6 +127,10 @@ class PixelCalculate():
                     self.save_model(self.weights_path, 'best')
             
         self.logger.info("Training Completed.")
+        self.logger.info(f"Best validation NMSE: {min_val_loss}")
+        # psnr = 20 * log10(1024 / sqrt(min_val_loss))
+        # self.logger.info(f"Best validation PSNR: {psnr}")
+
         plot_learning_curve(loss_vec, val_vec, val_loss_vec, self.save_path)
         
 
@@ -133,12 +139,12 @@ if __name__ == "__main__":
     parser.add_argument('--lr', type=float, default=0.01)
     parser.add_argument('--epochs', type=int, default=50)
     parser.add_argument('--num_workers', type=int, default=32)
-    parser.add_argument('--device', type=int, nargs='+', default=0)
-    parser.add_argument('--batch_size', type=int, default=1024)
+    parser.add_argument('--device', type=int, nargs='+', default=5)
+    parser.add_argument('--batch_size', type=int, default=4)
     parser.add_argument('--val_step', type=int, default=2)
     parser.add_argument('--use_poison', action='store_true', help='train on patches with corrupted pixels in neighborhood')
-    parser.add_argument('--data_path', type=str, default='data/S7-ISP-Dataset/feature_5')
-    parser.add_argument('--model_path', type=str, default='results3/mlp0')
+    parser.add_argument('--data_path', type=str, default='/data1/Bad_Pixel_Correction/FiveK/feature_5')
+    parser.add_argument('--model_path', type=str, default='results/mlp')
     args = parser.parse_args()
     pc = PixelCalculate(args)
     pc.train()

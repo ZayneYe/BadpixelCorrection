@@ -10,7 +10,8 @@ def move_data(dir, set, cate):
         shutil.move(os.path.join(dir, file), dir_)
 
 if __name__ == "__main__":
-    feature_dir = '../data/S7-ISP-Dataset/feature_5'
+    # feature_dir = '../data/S7-ISP-Dataset/feature_5'
+    feature_dir = '/data1/Bad_Pixel_Correction/FiveK/feature_15'
     data = list(os.listdir(feature_dir))
     random.seed(77)
     random.shuffle(data)

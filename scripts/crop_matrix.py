@@ -17,6 +17,7 @@ def compute_pixel(data_dir):
         return max_pixel, min_pixel
 
 def resize_dng(raw_data, cut_size):
+    # print(raw_data.shape)
     H, W = raw_data.shape
     H_, W_ = H, W
     while H_ % cut_size:
@@ -33,11 +34,11 @@ def resize_dng(raw_data, cut_size):
 
 if __name__ == "__main__":
     random.seed(77)
-    cut_size = 5
-    sample_amt = 625 #should be a square number
+    cut_size = 15
+    sample_amt = 125 #should be a square number
 
-    data_dir = '/data1/S7-ISP-Dataset/medium_dng'
-    feature_dir = '../data/S7-ISP-Dataset/feature_5'
+    data_dir = '/data1/FiveK/Canon_EOS_5D/DNG'
+    feature_dir = f'/data1/Bad_Pixel_Correction/FiveK/feature_{cut_size}'
    
     if not os.path.exists(feature_dir):
         os.makedirs(feature_dir)

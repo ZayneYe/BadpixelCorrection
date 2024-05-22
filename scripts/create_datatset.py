@@ -15,3 +15,17 @@ if __name__ == "__main__":
                 shutil.copy(file_path, data_dir)
                 shutil.move(os.path.join(data_dir, file), os.path.join(data_dir, new_file))
                 cnt += 1
+
+
+# save numpy files for original .dng images
+# import rawpy
+# import os
+# import numpy as np
+# org_dir = '/data1/Invertible_ISP/original_images'
+# save_dir = '/data1/Bad_Pixel_Detection/FiveK/original_images'
+# for i, dng in enumerate(os.listdir(org_dir)):
+#      file_name = dng.split('.')[0]
+#      raw = rawpy.imread(os.path.join(org_dir, dng))
+#      raw_data = raw.raw_image
+#      raw_data = np.asarray(raw_data)
+#      np.save(os.path.join(save_dir, file_name), raw_data)
